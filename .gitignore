@@ -1,0 +1,12 @@
+# Ignore Visual Studio files
+.vs/
+*.user
+*.suo
+*.vscode/
+
+# Ignore build files
+bin/
+obj/
+
+# Ignore package files
+packages/
