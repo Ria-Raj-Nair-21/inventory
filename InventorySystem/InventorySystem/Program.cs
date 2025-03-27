@@ -9,6 +9,42 @@ class Program
     {
         while (true)
         {
+            if (Environment.GetEnvironmentVariable("JENKINS_BUILD") == "true")
+    {
+        Console.WriteLine("Jenkins build detected. Skipping interactive mode.");
+        InitializeDatabase();
+        ViewInventory();
+        conn.Close();
+        return;
+    }
+
+    InitializeDatabase();
+    bool running = true;
+
+    while (running)
+    {
+        Console.WriteLine("\n1. Add Item\n2. View Inventory\n3. Exit");
+        Console.Write("Select an option: ");
+        string choice = Console.ReadLine();
+
+        switch (choice)
+        {
+            case "1":
+                AddItem();
+                break;
+            case "2":
+                ViewInventory();
+                break;
+            case "3":
+                running = false;
+                break;
+            default:
+                Console.WriteLine("Invalid choice. Try again.");
+                break;
+        }
+    }
+
+    conn.Close();
             Console.WriteLine("\nInventory System");
             Console.WriteLine("1. Add Item");
             Console.WriteLine("2. Remove Item");
