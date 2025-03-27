@@ -1,114 +1,98 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
+using System.Data.SQLite;
 
-class Program
+class Inventory
 {
-    static List<string> inventory = new List<string>();
+    private static SQLiteConnection conn;
 
     static void Main()
     {
-        while (true)
-        {
-            if (Environment.GetEnvironmentVariable("JENKINS_BUILD") == "true")
-    {
-        Console.WriteLine("Jenkins build detected. Skipping interactive mode.");
+        bool isJenkins = Environment.GetEnvironmentVariable("JENKINS_BUILD") == "true";
+        
         InitializeDatabase();
-        ViewInventory();
-        conn.Close();
-        return;
-    }
 
-    InitializeDatabase();
-    bool running = true;
-
-    while (running)
-    {
-        Console.WriteLine("\n1. Add Item\n2. View Inventory\n3. Exit");
-        Console.Write("Select an option: ");
-        string choice = Console.ReadLine();
-
-        switch (choice)
+        if (isJenkins)
         {
-            case "1":
-                AddItem();
-                break;
-            case "2":
-                ViewInventory();
-                break;
-            case "3":
-                running = false;
-                break;
-            default:
-                Console.WriteLine("Invalid choice. Try again.");
-                break;
+            Console.WriteLine("Jenkins build detected. Running automated tests...");
+            AddItem("Test Item", 5);
+            ViewInventory();
+            conn.Close();
+            return;
         }
+
+        RunInteractiveMenu();
+        conn.Close();
     }
 
-    conn.Close();
-            Console.WriteLine("\nInventory System");
-            Console.WriteLine("1. Add Item");
-            Console.WriteLine("2. Remove Item");
-            Console.WriteLine("3. View Inventory");
-            Console.WriteLine("4. Exit");
-            Console.Write("Choose an option: ");
+    static void InitializeDatabase()
+    {
+        conn = new SQLiteConnection("Data Source=inventory.db;Version=3;");
+        conn.Open();
 
+        string createTableQuery = "CREATE TABLE IF NOT EXISTS Items (Id INTEGER PRIMARY KEY, Name TEXT, Quantity INTEGER)";
+        SQLiteCommand command = new SQLiteCommand(createTableQuery, conn);
+        command.ExecuteNonQuery();
+    }
+
+    static void RunInteractiveMenu()
+    {
+        bool running = true;
+
+        while (running)
+        {
+            Console.WriteLine("\n1. Add Item\n2. View Inventory\n3. Exit");
+            Console.Write("Select an option: ");
             string choice = Console.ReadLine();
 
             switch (choice)
             {
                 case "1":
-                    AddItem();
+                    Console.Write("Enter item name: ");
+                    string name = Console.ReadLine();
+                    Console.Write("Enter quantity: ");
+                    int quantity;
+                    
+                    while (!int.TryParse(Console.ReadLine(), out quantity))
+                    {
+                        Console.Write("Invalid input. Enter a valid quantity: ");
+                    }
+
+                    AddItem(name, quantity);
                     break;
                 case "2":
-                    RemoveItem();
-                    break;
-                case "3":
                     ViewInventory();
                     break;
-                case "4":
-                    return;
+                case "3":
+                    running = false;
+                    break;
                 default:
-                    Console.WriteLine("Invalid choice. Please try again.");
+                    Console.WriteLine("Invalid choice. Try again.");
                     break;
             }
         }
     }
 
-    static void AddItem()
+    static void AddItem(string name, int quantity)
     {
-        Console.Write("Enter item name: ");
-        string item = Console.ReadLine();
-        inventory.Add(item);
-        Console.WriteLine($"{item} added to inventory.");
-    }
+        string query = "INSERT INTO Items (Name, Quantity) VALUES (@name, @quantity)";
+        SQLiteCommand command = new SQLiteCommand(query, conn);
+        command.Parameters.AddWithValue("@name", name);
+        command.Parameters.AddWithValue("@quantity", quantity);
+        command.ExecuteNonQuery();
 
-    static void RemoveItem()
-    {
-        Console.Write("Enter item name to remove: ");
-        string item = Console.ReadLine();
-        if (inventory.Remove(item))
-        {
-            Console.WriteLine($"{item} removed from inventory.");
-        }
-        else
-        {
-            Console.WriteLine("Item not found.");
-        }
+        Console.WriteLine("Item added successfully!");
     }
 
     static void ViewInventory()
     {
-        Console.WriteLine("\nCurrent Inventory:");
-        if (inventory.Count == 0)
+        string query = "SELECT * FROM Items";
+        SQLiteCommand command = new SQLiteCommand(query, conn);
+        SQLiteDataReader reader = command.ExecuteReader();
+
+        Console.WriteLine("\nInventory:");
+        while (reader.Read())
         {
-            Console.WriteLine("Inventory is empty.");
-        }
-        else
-        {
-            foreach (var item in inventory)
-            {
-                Console.WriteLine("- " + item);
-            }
+            Console.WriteLine($"ID: {reader["Id"]}, Name: {reader["Name"]}, Quantity: {reader["Quantity"]}");
         }
     }
 }
