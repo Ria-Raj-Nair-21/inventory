@@ -35,7 +35,7 @@ class Inventory
         command.ExecuteNonQuery();
     }
 
-   static void RunInteractiveMenu()
+  static void RunInteractiveMenu()
 {
     bool running = true;
 
@@ -43,13 +43,18 @@ class Inventory
     {
         Console.WriteLine("\n1. Add Item\n2. View Inventory\n3. Exit");
         Console.Write("Select an option: ");
-        string choice = Console.ReadLine()?.Trim(); // Trim to remove accidental spaces/null
+        string choice = Console.ReadLine();
 
-        if (string.IsNullOrEmpty(choice))  // Handle empty input
+        // Debugging: Print input received
+        Console.WriteLine($"DEBUG: Received input: '{choice}'");
+
+        if (string.IsNullOrWhiteSpace(choice)) // Handle null/empty input
         {
             Console.WriteLine("Invalid choice. Try again.");
             continue;
         }
+
+        choice = choice.Trim(); // Remove extra spaces
 
         switch (choice)
         {
@@ -78,6 +83,7 @@ class Inventory
         }
     }
 }
+
 
 
     static void AddItem(string name, int quantity)
