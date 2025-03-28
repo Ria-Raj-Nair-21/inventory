@@ -4,22 +4,25 @@ using System.Data.SQLite;
 class Inventory
 {
     private static SQLiteConnection conn;
-
-    static void Main()
+static void Main()
 {
     bool isJenkins = Environment.GetEnvironmentVariable("JENKINS_BUILD") == "true";
-    
+
     InitializeDatabase();
 
     if (isJenkins)
     {
         Console.WriteLine("Jenkins build detected. Running automated tests...");
+
+        // Run automated tests instead of interactive input
         AddItem("Test Item", 5);
         ViewInventory();
+        
         conn.Close();
         return;
     }
 
+    // Run interactive mode for local execution
     RunInteractiveMenu();
     conn.Close();
 }
