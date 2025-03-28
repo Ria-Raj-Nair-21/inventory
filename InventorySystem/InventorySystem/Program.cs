@@ -6,23 +6,24 @@ class Inventory
     private static SQLiteConnection conn;
 
     static void Main()
+{
+    bool isJenkins = Environment.GetEnvironmentVariable("JENKINS_BUILD") == "true";
+    
+    InitializeDatabase();
+
+    if (isJenkins)
     {
-        bool isJenkins = Environment.GetEnvironmentVariable("JENKINS_BUILD") == "true";
-        
-        InitializeDatabase();
-
-        if (isJenkins)
-        {
-            Console.WriteLine("Jenkins build detected. Running automated tests...");
-            AddItem("Test Item", 5);
-            ViewInventory();
-            conn.Close();
-            return;
-        }
-
-        RunInteractiveMenu();
+        Console.WriteLine("Jenkins build detected. Running automated tests...");
+        AddItem("Test Item", 5);
+        ViewInventory();
         conn.Close();
+        return;
     }
+
+    RunInteractiveMenu();
+    conn.Close();
+}
+
 
     static void InitializeDatabase()
     {
