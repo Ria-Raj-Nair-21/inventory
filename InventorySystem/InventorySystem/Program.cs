@@ -5,21 +5,7 @@ class Inventory
 {
     private static SQLiteConnection conn;
 
-    static void Main()
-    {
-        if (args.Length > 0)
-    {
-        if (args[0] == "add" && args.Length == 3)
-        {
-            string itemName = args[1];
-            int quantity = int.Parse(args[2]);
-            AddItem(itemName, quantity);
-            return;
-        }
-    }
-
-    RunInteractiveMenu();
-
+    
         
         string jenkinsEnv = Environment.GetEnvironmentVariable("JENKINS_BUILD");
         bool isJenkins = !string.IsNullOrEmpty(jenkinsEnv) && jenkinsEnv.ToLower() == "true";
