@@ -34,43 +34,50 @@ class Inventory
         command.ExecuteNonQuery();
     }
 
-    static void RunInteractiveMenu()
+   static void RunInteractiveMenu()
+{
+    bool running = true;
+
+    while (running)
     {
-        bool running = true;
+        Console.WriteLine("\n1. Add Item\n2. View Inventory\n3. Exit");
+        Console.Write("Select an option: ");
+        string choice = Console.ReadLine()?.Trim(); // Trim to remove accidental spaces/null
 
-        while (running)
+        if (string.IsNullOrEmpty(choice))  // Handle empty input
         {
-            Console.WriteLine("\n1. Add Item\n2. View Inventory\n3. Exit");
-            Console.Write("Select an option: ");
-            string choice = Console.ReadLine();
+            Console.WriteLine("Invalid choice. Try again.");
+            continue;
+        }
 
-            switch (choice)
-            {
-                case "1":
-                    Console.Write("Enter item name: ");
-                    string name = Console.ReadLine();
-                    Console.Write("Enter quantity: ");
-                    int quantity;
-                    
-                    while (!int.TryParse(Console.ReadLine(), out quantity))
-                    {
-                        Console.Write("Invalid input. Enter a valid quantity: ");
-                    }
+        switch (choice)
+        {
+            case "1":
+                Console.Write("Enter item name: ");
+                string name = Console.ReadLine()?.Trim();
+                Console.Write("Enter quantity: ");
+                int quantity;
 
-                    AddItem(name, quantity);
-                    break;
-                case "2":
-                    ViewInventory();
-                    break;
-                case "3":
-                    running = false;
-                    break;
-                default:
-                    Console.WriteLine("Invalid choice. Try again.");
-                    break;
-            }
+                while (!int.TryParse(Console.ReadLine(), out quantity))
+                {
+                    Console.Write("Invalid input. Enter a valid quantity: ");
+                }
+
+                AddItem(name, quantity);
+                break;
+            case "2":
+                ViewInventory();
+                break;
+            case "3":
+                running = false;
+                break;
+            default:
+                Console.WriteLine("Invalid choice. Try again.");
+                break;
         }
     }
+}
+
 
     static void AddItem(string name, int quantity)
     {
