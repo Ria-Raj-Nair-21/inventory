@@ -41,6 +41,7 @@ static void Main()
   static void RunInteractiveMenu()
 {
     bool running = true;
+    int attempts = 0; // Track attempts to prevent infinite looping
 
     while (running)
     {
@@ -48,16 +49,22 @@ static void Main()
         Console.Write("Select an option: ");
         string choice = Console.ReadLine();
 
-        // Debugging: Print input received
         Console.WriteLine($"DEBUG: Received input: '{choice}'");
 
-        if (string.IsNullOrWhiteSpace(choice)) // Handle null/empty input
+        if (string.IsNullOrWhiteSpace(choice))
         {
             Console.WriteLine("Invalid choice. Try again.");
+            attempts++;
+
+            if (attempts > 5) // Stop after 5 invalid attempts
+            {
+                Console.WriteLine("Too many invalid inputs. Exiting...");
+                return;
+            }
             continue;
         }
 
-        choice = choice.Trim(); // Remove extra spaces
+        choice = choice.Trim();
 
         switch (choice)
         {
