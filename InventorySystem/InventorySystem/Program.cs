@@ -1,12 +1,12 @@
 using System;
 using System.Data.SQLite;
 
-class Inventory
+class Program
 {
     private static SQLiteConnection conn;
 
-    
-        
+    static void Main(string[] args)
+    {
         string jenkinsEnv = Environment.GetEnvironmentVariable("JENKINS_BUILD");
         bool isJenkins = !string.IsNullOrEmpty(jenkinsEnv) && jenkinsEnv.ToLower() == "true";
 
@@ -18,7 +18,7 @@ class Inventory
             AddItem("Test Item", 5);
             ViewInventory();
             conn.Close();
-            return; // ✅ Ensure we exit immediately
+            return;
         }
 
         RunInteractiveMenu();
@@ -46,13 +46,10 @@ class Inventory
             Console.Write("Select an option: ");
             string choice = Console.ReadLine();
 
-            Console.WriteLine($"DEBUG: Received input: '{choice}'");
-
             if (string.IsNullOrWhiteSpace(choice))
             {
                 Console.WriteLine("Invalid choice. Try again.");
                 attempts++;
-
                 if (attempts > 5)
                 {
                     Console.WriteLine("Too many invalid inputs. Exiting...");
@@ -61,21 +58,17 @@ class Inventory
                 continue;
             }
 
-            choice = choice.Trim();
-
-            switch (choice)
+            switch (choice.Trim())
             {
                 case "1":
                     Console.Write("Enter item name: ");
                     string name = Console.ReadLine()?.Trim();
                     Console.Write("Enter quantity: ");
                     int quantity;
-
                     while (!int.TryParse(Console.ReadLine(), out quantity))
                     {
                         Console.Write("Invalid input. Enter a valid quantity: ");
                     }
-
                     AddItem(name, quantity);
                     break;
                 case "2":
