@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://your-repo-url.git'
+                git 'https://github.com/Ria-Raj-Nair-21/inventory.git'
             }
         }
 
